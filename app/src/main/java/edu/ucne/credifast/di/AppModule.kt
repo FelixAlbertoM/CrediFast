@@ -14,7 +14,9 @@ import edu.ucne.credifast.data.local.CrediFastDatabase
 import edu.ucne.credifast.data.local.dao.UsuarioDao
 import edu.ucne.credifast.domain.auth.repository.AuthRepository
 import javax.inject.Singleton
-
+import edu.ucne.credifast.data.local.dao.ClienteDao
+import edu.ucne.credifast.data.cliente.ClienteRepositoryImpl
+import edu.ucne.credifast.domain.cliente.repository.ClienteRepository
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -32,9 +34,17 @@ object AppModule {
             .fallbackToDestructiveMigration()
             .build()
     }
+    @Provides
+    @Singleton
+    fun provideClienteRepository(
+        clienteDao: ClienteDao
+    ): ClienteRepository = ClienteRepositoryImpl(clienteDao)
 
     @Provides
     fun provideUsuarioDao(db: CrediFastDatabase): UsuarioDao = db.usuarioDao()
+
+    @Provides
+    fun provideClienteDao(db: CrediFastDatabase): ClienteDao = db.clienteDao()
 
     @Provides
     @Singleton
