@@ -12,7 +12,28 @@
           "package_name": "edu.ucne.credifast"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "500803166407-2kv4o7evmulpeg30lsiuaod4ojpvpb9m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.ucne.credifast",
+            "certificate_hash": "fca32ff20f7fb0c185ad4752f3c246e087ffd77c"
+          }
+        },
+        {
+          "client_id": "500803166407-muhiqdl1pf6l90b3vclj3cpmg04v9omu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.ucne.credifast",
+            "certificate_hash": "fd0eeec46a9bf874e42b9c145d1bbd30ca7322e0"
+          }
+        },
+        {
+          "client_id": "500803166407-3nm6t4cra938nks18t7p7p1aqssb8ieg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAoEeezkOxDSpNHXa2ZeHY26g9kjW6UhPg"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "500803166407-3nm6t4cra938nks18t7p7p1aqssb8ieg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
