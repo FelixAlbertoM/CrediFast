@@ -12,4 +12,9 @@ sealed class Screen : NavKey {
     @Serializable
     data object Home : Screen()
 
+    @Serializable
+    data object ClienteList : Screen()
+
+    @Serializable
+    data class ClienteEdit(val clienteId: Int = 0) : Screen()
 }
