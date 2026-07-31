@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "500803166407",
+    "project_id": "credifast-f5293",
+    "storage_bucket": "credifast-f5293.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500803166407:android:68aad3df738c05e50bdee2",
+        "android_client_info": {
+          "package_name": "edu.ucne.credifast"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoEeezkOxDSpNHXa2ZeHY26g9kjW6UhPg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
