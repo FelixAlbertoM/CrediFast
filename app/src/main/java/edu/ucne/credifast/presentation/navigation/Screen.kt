@@ -17,4 +17,12 @@ sealed class Screen : NavKey {
 
     @Serializable
     data class ClienteEdit(val clienteId: Int = 0) : Screen()
+    @Serializable
+    data object PrestamoList : Screen()
+
+    @Serializable
+    data object PrestamoEdit : Screen()
+
+    @Serializable
+    data class PrestamoDetail(val prestamoId: Int) : Screen()
 }
