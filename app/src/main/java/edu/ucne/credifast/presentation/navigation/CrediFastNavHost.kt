@@ -9,6 +9,9 @@ import androidx.navigation3.ui.NavDisplay
 import edu.ucne.credifast.presentation.auth.LoginScreen
 import edu.ucne.credifast.presentation.cliente.edit.ClienteEditScreen
 import edu.ucne.credifast.presentation.cliente.list.ClienteListScreen
+import edu.ucne.credifast.presentation.prestamo.detail.PrestamoDetailScreen
+import edu.ucne.credifast.presentation.prestamo.edit.PrestamoEditScreen
+import edu.ucne.credifast.presentation.prestamo.list.PrestamoListScreen
 
 @Composable
 fun CrediFastNavHost(isLoggedIn: Boolean) {
@@ -34,18 +37,47 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
             entry<Screen.ClienteList> {
                 ClienteListScreen(
                     onAgregarCliente = { backStack.add(Screen.ClienteEdit(0)) },
-                    onClienteClick = { id -> backStack.add(Screen.ClienteEdit(id)) }
+                    onClienteClick = { id -> backStack.add(Screen.ClienteEdit(id)) },
+                    onIrAPrestamos = {
+                        if (backStack.lastOrNull() != Screen.PrestamoList) {
+                            backStack.clear()
+                            backStack.add(Screen.PrestamoList)
+                        }
+                    }
                 )
             }
 
             entry<Screen.ClienteEdit> { key ->
                 ClienteEditScreen(
                     clienteId = key.clienteId,
-                    onBack = {
-                        if (backStack.isNotEmpty()) {
-                            backStack.removeAt(backStack.lastIndex)
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) }
+                )
+            }
+
+            entry<Screen.PrestamoList> {
+                PrestamoListScreen(
+                    onOtorgarPrestamo = { backStack.add(Screen.PrestamoEdit) },
+                    onPrestamoClick = { id -> backStack.add(Screen.PrestamoDetail(id)) },
+                    onIrAClientes = {
+                        if (backStack.lastOrNull() != Screen.ClienteList) {
+                            backStack.clear()
+                            backStack.add(Screen.ClienteList)
                         }
                     }
+                )
+            }
+
+            entry<Screen.PrestamoEdit> {
+                PrestamoEditScreen(
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) }
+                )
+            }
+
+            entry<Screen.PrestamoDetail> { key ->
+                PrestamoDetailScreen(
+                    prestamoId = key.prestamoId,
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) },
+                    onCuotaClick = { /* Se conectará en el módulo de Cobros */ }
                 )
             }
         }
