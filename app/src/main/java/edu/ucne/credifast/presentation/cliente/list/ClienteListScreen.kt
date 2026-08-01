@@ -39,12 +39,22 @@ import edu.ucne.credifast.domain.cliente.model.Cliente
 fun ClienteListScreen(
     onAgregarCliente: () -> Unit,
     onClienteClick: (Int) -> Unit,
+    onIrAPrestamos: () -> Unit,
     viewModel: ClienteListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Clientes") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Clientes") },
+                actions = {
+                    androidx.compose.material3.TextButton(onClick = onIrAPrestamos) {
+                        Text("Préstamos")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAgregarCliente) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar cliente")
