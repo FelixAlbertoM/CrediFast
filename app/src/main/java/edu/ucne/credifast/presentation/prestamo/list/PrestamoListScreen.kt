@@ -40,6 +40,7 @@ fun PrestamoListScreen(
     onOtorgarPrestamo: () -> Unit,
     onPrestamoClick: (Int) -> Unit,
     onIrAClientes: () -> Unit,
+    onIrACobros: () -> Unit,
     viewModel: PrestamoListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -51,6 +52,9 @@ fun PrestamoListScreen(
                 actions = {
                     androidx.compose.material3.TextButton(onClick = onIrAClientes) {
                         Text("Clientes")
+                    }
+                    androidx.compose.material3.TextButton(onClick = onIrACobros) {
+                        Text("Cobros")
                     }
                 }
             )
