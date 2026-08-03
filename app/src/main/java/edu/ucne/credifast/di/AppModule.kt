@@ -17,6 +17,11 @@ import javax.inject.Singleton
 import edu.ucne.credifast.data.local.dao.ClienteDao
 import edu.ucne.credifast.data.cliente.ClienteRepositoryImpl
 import edu.ucne.credifast.domain.cliente.repository.ClienteRepository
+import edu.ucne.credifast.data.local.dao.PrestamoDao
+import edu.ucne.credifast.data.local.dao.CuotaDao
+import edu.ucne.credifast.data.prestamo.PrestamoRepositoryImpl
+import edu.ucne.credifast.domain.prestamo.repository.PrestamoRepository
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -63,4 +68,18 @@ object AppModule {
         webClientId: String,
         usuarioDao: UsuarioDao
     ): AuthRepository = GoogleAuthRepositoryImpl(context, auth, webClientId, usuarioDao)
+
+    @Provides
+    fun providePrestamoDao(db: CrediFastDatabase): PrestamoDao = db.prestamoDao()
+
+    @Provides
+    fun provideCuotaDao(db: CrediFastDatabase): CuotaDao = db.cuotaDao()
+
+    @Provides
+    @Singleton
+    fun providePrestamoRepository(
+        prestamoDao: PrestamoDao,
+        cuotaDao: CuotaDao,
+        clienteDao: ClienteDao
+    ): PrestamoRepository = PrestamoRepositoryImpl(prestamoDao, cuotaDao, clienteDao)
 }

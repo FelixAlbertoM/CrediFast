@@ -1,9 +1,10 @@
-package edu.ucne.credifast.presentation.cliente.list
+package edu.ucne.credifast.presentation.prestamo.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,32 +33,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.credifast.domain.cliente.model.Cliente
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClienteListScreen(
-    onAgregarCliente: () -> Unit,
-    onClienteClick: (Int) -> Unit,
-    onIrAPrestamos: () -> Unit,
-    viewModel: ClienteListViewModel = hiltViewModel()
+fun PrestamoListScreen(
+    onOtorgarPrestamo: () -> Unit,
+    onPrestamoClick: (Int) -> Unit,
+    onIrAClientes: () -> Unit,
+    viewModel: PrestamoListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Clientes") },
+                title = { Text("Préstamos") },
                 actions = {
-                    androidx.compose.material3.TextButton(onClick = onIrAPrestamos) {
-                        Text("Préstamos")
+                    androidx.compose.material3.TextButton(onClick = onIrAClientes) {
+                        Text("Clientes")
                     }
                 }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAgregarCliente) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar cliente")
+            FloatingActionButton(onClick = onOtorgarPrestamo) {
+                Icon(Icons.Default.Add, contentDescription = "Otorgar préstamo")
             }
         }
     ) { padding ->
@@ -69,9 +69,9 @@ fun ClienteListScreen(
         ) {
             OutlinedTextField(
                 value = state.filtro,
-                onValueChange = { viewModel.onEvent(ClienteListUiEvent.FiltroChanged(it)) },
+                onValueChange = { viewModel.onEvent(PrestamoListUiEvent.FiltroChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Buscar por nombre, cédula o teléfono") },
+                placeholder = { Text("Buscar por cliente, cédula o teléfono") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true
             )
@@ -81,8 +81,8 @@ fun ClienteListScreen(
                 contentPadding = PaddingValues(vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(state.clientesFiltrados, key = { it.clienteId }) { cliente ->
-                    ClienteItem(cliente = cliente, onClick = { onClienteClick(cliente.clienteId) })
+                items(state.prestamosFiltrados, key = { it.prestamo.prestamoId }) { item ->
+                    PrestamoItem(item = item, onClick = { onPrestamoClick(item.prestamo.prestamoId) })
                 }
             }
         }
@@ -90,12 +90,12 @@ fun ClienteListScreen(
 }
 
 @Composable
-private fun ClienteItem(cliente: Cliente, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick
-    ) {
-        androidx.compose.foundation.layout.Row(
+private fun PrestamoItem(item: PrestamoUi, onClick: () -> Unit) {
+    val p = item.prestamo
+    val saldado = p.estado == "SALDADO"
+
+    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp),
@@ -109,7 +109,7 @@ private fun ClienteItem(cliente: Cliente, onClick: () -> Unit) {
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = cliente.nombre.take(2).uppercase(),
+                        text = item.nombreCliente.take(2).uppercase(),
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Bold
                     )
@@ -117,28 +117,29 @@ private fun ClienteItem(cliente: Cliente, onClick: () -> Unit) {
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = cliente.nombre,
+                    text = item.nombreCliente,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "${cliente.cedula} · ${cliente.telefono}",
+                    text = "${p.cantidadCuotas} cuotas · ${p.interesPorcentaje.toInt()}% interés",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            if (cliente.enListaNegra) {
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.errorContainer
-                ) {
-                    Text(
-                        text = "Lista negra",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "RD$${"%,.0f".format(p.balancePendiente)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (saldado) MaterialTheme.colorScheme.onSurfaceVariant
+                    else MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = if (saldado) "Saldado" else "restante",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
