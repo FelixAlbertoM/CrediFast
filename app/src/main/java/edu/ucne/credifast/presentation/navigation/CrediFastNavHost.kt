@@ -9,6 +9,9 @@ import androidx.navigation3.ui.NavDisplay
 import edu.ucne.credifast.presentation.auth.LoginScreen
 import edu.ucne.credifast.presentation.cliente.edit.ClienteEditScreen
 import edu.ucne.credifast.presentation.cliente.list.ClienteListScreen
+import edu.ucne.credifast.presentation.cobro.list.CobrosScreen
+import edu.ucne.credifast.presentation.cobro.pago.CobroPagoScreen
+import edu.ucne.credifast.presentation.cobro.recibo.ReciboScreen
 import edu.ucne.credifast.presentation.prestamo.detail.PrestamoDetailScreen
 import edu.ucne.credifast.presentation.prestamo.edit.PrestamoEditScreen
 import edu.ucne.credifast.presentation.prestamo.list.PrestamoListScreen
@@ -63,6 +66,12 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
                             backStack.clear()
                             backStack.add(Screen.ClienteList)
                         }
+                    },
+                    onIrACobros = {
+                        if (backStack.lastOrNull() != Screen.CobrosList) {
+                            backStack.clear()
+                            backStack.add(Screen.CobrosList)
+                        }
                     }
                 )
             }
@@ -77,7 +86,37 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
                 PrestamoDetailScreen(
                     prestamoId = key.prestamoId,
                     onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) },
-                    onCuotaClick = { /* Se conectará en el módulo de Cobros */ }
+                    onCuotaClick = { cuotaId -> backStack.add(Screen.CobroPago(cuotaId)) }
+                )
+            }
+
+            entry<Screen.CobrosList> {
+                CobrosScreen(
+                    onCobrarCuota = { cuotaId -> backStack.add(Screen.CobroPago(cuotaId)) },
+                    onIrAPrestamos = {
+                        if (backStack.lastOrNull() != Screen.PrestamoList) {
+                            backStack.clear()
+                            backStack.add(Screen.PrestamoList)
+                        }
+                    }
+                )
+            }
+
+            entry<Screen.CobroPago> { key ->
+                CobroPagoScreen(
+                    cuotaId = key.cuotaId,
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) },
+                    onPagoRealizado = { pagoId ->
+                        if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex)
+                        backStack.add(Screen.Recibo(pagoId))
+                    }
+                )
+            }
+
+            entry<Screen.Recibo> { key ->
+                ReciboScreen(
+                    pagoId = key.pagoId,
+                    onCerrar = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) }
                 )
             }
         }
