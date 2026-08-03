@@ -41,7 +41,7 @@ class PrestamoListViewModel @Inject constructor(
                 observeClientesUseCase()
             ) { prestamos, clientes ->
                 val porId = clientes.associateBy { it.clienteId }
-                prestamos.map { p ->
+                prestamos.filter { it.estado == "ACTIVO" }.map { p ->
                     val c = porId[p.clienteId]
                     PrestamoUi(
                         prestamo = p,
