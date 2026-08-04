@@ -10,23 +10,16 @@ sealed class Screen : NavKey {
     data object Login : Screen()
 
     @Serializable
-    data object Home : Screen()
-
-    @Serializable
-    data object ClienteList : Screen()
+    data object Main : Screen()
 
     @Serializable
     data class ClienteEdit(val clienteId: Int = 0) : Screen()
-    @Serializable
-    data object PrestamoList : Screen()
 
     @Serializable
     data object PrestamoEdit : Screen()
 
     @Serializable
     data class PrestamoDetail(val prestamoId: Int) : Screen()
-    @Serializable
-    data object CobrosList : Screen()
 
     @Serializable
     data class CobroPago(val cuotaId: Int) : Screen()
