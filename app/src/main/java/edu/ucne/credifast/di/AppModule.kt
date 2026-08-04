@@ -21,6 +21,9 @@ import edu.ucne.credifast.data.local.dao.PrestamoDao
 import edu.ucne.credifast.data.local.dao.CuotaDao
 import edu.ucne.credifast.data.prestamo.PrestamoRepositoryImpl
 import edu.ucne.credifast.domain.prestamo.repository.PrestamoRepository
+import edu.ucne.credifast.data.local.dao.PagoDao
+import edu.ucne.credifast.data.cobro.CobroRepositoryImpl
+import edu.ucne.credifast.domain.cobro.repository.CobroRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -82,4 +85,15 @@ object AppModule {
         cuotaDao: CuotaDao,
         clienteDao: ClienteDao
     ): PrestamoRepository = PrestamoRepositoryImpl(prestamoDao, cuotaDao, clienteDao)
+
+    @Provides
+    fun providePagoDao(db: CrediFastDatabase): PagoDao = db.pagoDao()
+
+    @Provides
+    @Singleton
+    fun provideCobroRepository(
+        cuotaDao: CuotaDao,
+        prestamoDao: PrestamoDao,
+        pagoDao: PagoDao
+    ): CobroRepository = CobroRepositoryImpl(cuotaDao, prestamoDao, pagoDao)
 }

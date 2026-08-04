@@ -37,29 +37,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrestamoListScreen(
-    onOtorgarPrestamo: () -> Unit,
+    modifier: Modifier = Modifier,
     onPrestamoClick: (Int) -> Unit,
-    onIrAClientes: () -> Unit,
     viewModel: PrestamoListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Préstamos") },
-                actions = {
-                    androidx.compose.material3.TextButton(onClick = onIrAClientes) {
-                        Text("Clientes")
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onOtorgarPrestamo) {
-                Icon(Icons.Default.Add, contentDescription = "Otorgar préstamo")
-            }
-        }
+        modifier = modifier,
+        topBar = { TopAppBar(title = { Text("Préstamos") }) },
     ) { padding ->
         Column(
             modifier = Modifier

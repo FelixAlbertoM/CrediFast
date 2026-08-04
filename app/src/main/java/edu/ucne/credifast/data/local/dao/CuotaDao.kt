@@ -23,4 +23,7 @@ interface CuotaDao {
 
     @Query("SELECT * FROM cuotas WHERE cuotaId = :id LIMIT 1")
     suspend fun getById(id: Int): CuotaEntity?
+
+    @Query("SELECT * FROM cuotas WHERE fechaVencimiento BETWEEN :inicio AND :fin ORDER BY fechaVencimiento ASC")
+    fun observeEntreFechas(inicio: Long, fin: Long): Flow<List<CuotaEntity>>
 }
