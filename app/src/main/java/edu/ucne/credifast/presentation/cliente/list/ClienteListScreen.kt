@@ -37,29 +37,16 @@ import edu.ucne.credifast.domain.cliente.model.Cliente
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClienteListScreen(
-    onAgregarCliente: () -> Unit,
+    modifier: Modifier = Modifier,
     onClienteClick: (Int) -> Unit,
-    onIrAPrestamos: () -> Unit,
     viewModel: ClienteListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Clientes") },
-                actions = {
-                    androidx.compose.material3.TextButton(onClick = onIrAPrestamos) {
-                        Text("Préstamos")
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAgregarCliente) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar cliente")
-            }
-        }
+        modifier = modifier,
+        topBar = { TopAppBar(title = { Text("Clientes") }) },
+
     ) { padding ->
         Column(
             modifier = Modifier

@@ -47,23 +47,15 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CobrosScreen(
+    modifier: Modifier = Modifier,
     onCobrarCuota: (Int) -> Unit,
-    onIrAPrestamos: () -> Unit,
     viewModel: CobrosViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Cobros") },
-                actions = {
-                    androidx.compose.material3.TextButton(onClick = onIrAPrestamos) {
-                        Text("Préstamos")
-                    }
-                }
-            )
-        }
+        modifier = modifier,
+        topBar = { TopAppBar(title = { Text("Cobros") }) }
     ) { padding ->
         Column(
             modifier = Modifier
