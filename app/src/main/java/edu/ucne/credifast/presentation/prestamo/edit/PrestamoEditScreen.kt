@@ -155,6 +155,8 @@ fun PrestamoEditScreen(
                     value = state.capital,
                     onValueChange = { viewModel.onEvent(PrestamoEditUiEvent.CapitalChanged(it)) },
                     label = { Text("Monto (RD$)") },
+                    isError = state.errorCapital != null,
+                    supportingText = { state.errorCapital?.let { Text(it) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f),
                     singleLine = true
@@ -163,6 +165,8 @@ fun PrestamoEditScreen(
                     value = state.interes,
                     onValueChange = { viewModel.onEvent(PrestamoEditUiEvent.InteresChanged(it)) },
                     label = { Text("Interés %") },
+                    isError = state.errorInteres != null,
+                    supportingText = { state.errorInteres?.let { Text(it) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f),
                     singleLine = true
@@ -173,10 +177,20 @@ fun PrestamoEditScreen(
                 value = state.cuotas,
                 onValueChange = { viewModel.onEvent(PrestamoEditUiEvent.CuotasChanged(it)) },
                 label = { Text("Cuotas (semanas)") },
+                isError = state.errorCuotas != null,
+                supportingText = { state.errorCuotas?.let { Text(it) } },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
+            state.errorCliente?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             Card(
                 colors = CardDefaults.cardColors(
@@ -192,7 +206,7 @@ fun PrestamoEditScreen(
             Button(
                 onClick = { viewModel.onEvent(PrestamoEditUiEvent.Otorgar) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = state.puedeOtorgar
+                enabled = !state.isLoading
             ) {
                 Text("Otorgar préstamo")
             }
