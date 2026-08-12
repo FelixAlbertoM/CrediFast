@@ -41,7 +41,9 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
                     onClienteClick = { id -> backStack.add(Screen.ClienteEdit(id)) },
                     onOtorgarPrestamo = { backStack.add(Screen.PrestamoEdit) },
                     onPrestamoClick = { id -> backStack.add(Screen.PrestamoDetail(id)) },
-                    onCobrarCuota = { cuotaId -> backStack.add(Screen.CobroPago(cuotaId)) }
+                    onCobrarCuota = { cuotaId -> backStack.add(Screen.CobroPago(cuotaId)) },
+                    onMoraIrACobrar = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) },
+                    onMoraVerDetalle = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) }
                 )
             }
 

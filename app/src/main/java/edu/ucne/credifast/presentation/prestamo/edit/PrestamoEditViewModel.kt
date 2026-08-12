@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.credifast.domain.common.Resource
 import edu.ucne.credifast.domain.prestamo.usecase.GetClientesElegiblesUseCase
 import edu.ucne.credifast.domain.prestamo.usecase.OtorgarPrestamoUseCase
+import edu.ucne.credifast.domain.prestamo.usecase.PrestamoValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,6 +68,24 @@ class PrestamoEditViewModel @Inject constructor(
 
     private fun otorgar() {
         val s = _state.value
+
+        val eCliente = PrestamoValidator.validarCliente(s.clienteSeleccionado)
+        val eCapital = PrestamoValidator.validarCapital(s.capital)
+        val eInteres = PrestamoValidator.validarInteres(s.interes)
+        val eCuotas = PrestamoValidator.validarCuotas(s.cuotas)
+
+        if (eCliente != null || eCapital != null || eInteres != null || eCuotas != null) {
+            _state.update {
+                it.copy(
+                    errorCliente = eCliente,
+                    errorCapital = eCapital,
+                    errorInteres = eInteres,
+                    errorCuotas = eCuotas
+                )
+            }
+            return
+        }
+
         val cliente = s.clienteSeleccionado ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }

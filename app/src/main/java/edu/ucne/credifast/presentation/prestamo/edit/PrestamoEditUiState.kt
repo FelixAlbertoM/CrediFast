@@ -10,6 +10,10 @@ data class PrestamoEditUiState(
     val capital: String = "",
     val interes: String = "",
     val cuotas: String = "",
+    val errorCliente: String? = null,
+    val errorCapital: String? = null,
+    val errorInteres: String? = null,
+    val errorCuotas: String? = null,
     val errorMensaje: String? = null,
     val guardadoExitoso: Boolean = false,
     val isLoading: Boolean = false

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
 import edu.ucne.credifast.presentation.cliente.list.ClienteListScreen
 import edu.ucne.credifast.presentation.cobro.list.CobrosScreen
+import edu.ucne.credifast.presentation.mora.MoraScreen
 import edu.ucne.credifast.presentation.prestamo.list.PrestamoListScreen
 
 @Composable
@@ -25,7 +26,9 @@ fun MainScreen(
     onClienteClick: (Int) -> Unit,
     onOtorgarPrestamo: () -> Unit,
     onPrestamoClick: (Int) -> Unit,
-    onCobrarCuota: (Int) -> Unit
+    onCobrarCuota: (Int) -> Unit,
+    onMoraIrACobrar: (Int) -> Unit,
+    onMoraVerDetalle: (Int) -> Unit
 ) {
     var tabActual by remember { mutableStateOf(MainTab.CLIENTES) }
 
@@ -51,6 +54,7 @@ fun MainScreen(
                     Icon(Icons.Filled.Add, contentDescription = "Otorgar préstamo")
                 }
                 MainTab.COBROS -> {}
+                MainTab.MORA -> {}
             }
         }
     ) { padding ->
@@ -66,6 +70,11 @@ fun MainScreen(
             MainTab.COBROS -> CobrosScreen(
                 modifier = Modifier.padding(padding),
                 onCobrarCuota = onCobrarCuota
+            )
+            MainTab.MORA -> MoraScreen(
+                modifier = Modifier.padding(padding),
+                onIrACobrar = onMoraIrACobrar,
+                onVerDetalle = onMoraVerDetalle
             )
         }
     }
