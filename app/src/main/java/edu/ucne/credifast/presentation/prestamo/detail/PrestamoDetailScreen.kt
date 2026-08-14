@@ -78,7 +78,6 @@ fun PrestamoDetailScreen(
                 .padding(padding)
                 .padding(horizontal = 16.dp)
         ) {
-            // Encabezado
             Card(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -125,12 +124,21 @@ fun PrestamoDetailScreen(
                 }
             }
 
+            val prestamoActivo = prestamo.estado == "ACTIVO"
+
             LazyColumn(
                 contentPadding = PaddingValues(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(state.cuotas, key = { it.cuotaId }) { cuota ->
-                    CuotaItem(cuota = cuota, onClick = { onCuotaClick(cuota.cuotaId) })
+                    CuotaItem(
+                        cuota = cuota,
+                        onClick = {
+                            if (prestamoActivo && !cuota.estaPagada) {
+                                onCuotaClick(cuota.cuotaId)
+                            }
+                        }
+                    )
                 }
             }
         }
