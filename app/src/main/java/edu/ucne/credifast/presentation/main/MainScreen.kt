@@ -14,11 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
 import edu.ucne.credifast.presentation.cliente.list.ClienteListScreen
 import edu.ucne.credifast.presentation.cobro.list.CobrosScreen
-import edu.ucne.credifast.presentation.mora.MoraScreen
+import edu.ucne.credifast.presentation.dashboard.DashboardScreen
 import edu.ucne.credifast.presentation.prestamo.list.PrestamoListScreen
+import androidx.compose.foundation.layout.padding
 
 @Composable
 fun MainScreen(
@@ -27,10 +27,12 @@ fun MainScreen(
     onOtorgarPrestamo: () -> Unit,
     onPrestamoClick: (Int) -> Unit,
     onCobrarCuota: (Int) -> Unit,
-    onMoraIrACobrar: (Int) -> Unit,
-    onMoraVerDetalle: (Int) -> Unit
+    onIrAMora: () -> Unit,
+    onIrAHistorial: () -> Unit,
+    onIrAListaNegra: () -> Unit,
+    onCerrarSesion: () -> Unit
 ) {
-    var tabActual by remember { mutableStateOf(MainTab.CLIENTES) }
+    var tabActual by remember { mutableStateOf(MainTab.INICIO) }
 
     Scaffold(
         bottomBar = {
@@ -53,12 +55,14 @@ fun MainScreen(
                 MainTab.PRESTAMOS -> FloatingActionButton(onClick = onOtorgarPrestamo) {
                     Icon(Icons.Filled.Add, contentDescription = "Otorgar préstamo")
                 }
-                MainTab.COBROS -> {}
-                MainTab.MORA -> {}
+                else -> {}
             }
         }
     ) { padding ->
         when (tabActual) {
+            MainTab.INICIO -> DashboardScreen(
+                modifier = Modifier.padding(padding)
+            )
             MainTab.CLIENTES -> ClienteListScreen(
                 modifier = Modifier.padding(padding),
                 onClienteClick = onClienteClick
@@ -71,10 +75,12 @@ fun MainScreen(
                 modifier = Modifier.padding(padding),
                 onCobrarCuota = onCobrarCuota
             )
-            MainTab.MORA -> MoraScreen(
+            MainTab.MAS -> MasScreen(
                 modifier = Modifier.padding(padding),
-                onIrACobrar = onMoraIrACobrar,
-                onVerDetalle = onMoraVerDetalle
+                onMora = onIrAMora,
+                onHistorial = onIrAHistorial,
+                onListaNegra = onIrAListaNegra,
+                onCerrarSesion = onCerrarSesion
             )
         }
     }
