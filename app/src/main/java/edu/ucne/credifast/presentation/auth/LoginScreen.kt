@@ -30,6 +30,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun LoginScreen(
@@ -74,7 +77,6 @@ private fun LoginBody(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo
             Surface(
                 modifier = Modifier
                     .size(76.dp)
@@ -91,12 +93,12 @@ private fun LoginBody(
                 }
             }
 
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(40.dp))
             Text(
-                text = "FR_CrediFast",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                text = "Tus datos se guardan en este dispositivo",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -113,13 +115,19 @@ private fun LoginBody(
             } else {
                 Button(
                     onClick = onSignIn,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(50)
+                    modifier = Modifier.fillMaxWidth().height(54.dp),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline)
                 ) {
+                    Spacer(Modifier.size(12.dp))
                     Text(
                         text = "Continuar con Google",
-                        modifier = Modifier.padding(vertical = 6.dp),
-                        style = MaterialTheme.typography.labelLarge
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
