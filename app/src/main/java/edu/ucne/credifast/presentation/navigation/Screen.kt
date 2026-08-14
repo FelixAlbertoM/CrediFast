@@ -26,4 +26,13 @@ sealed class Screen : NavKey {
 
     @Serializable
     data class Recibo(val pagoId: Int) : Screen()
+
+    @Serializable
+    data object Mora : Screen()
+
+    @Serializable
+    data object Historial : Screen()
+
+    @Serializable
+    data object ListaNegra : Screen()
 }

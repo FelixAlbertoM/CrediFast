@@ -1,7 +1,10 @@
 package edu.ucne.credifast.presentation.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -10,7 +13,9 @@ import edu.ucne.credifast.presentation.auth.LoginScreen
 import edu.ucne.credifast.presentation.cliente.edit.ClienteEditScreen
 import edu.ucne.credifast.presentation.cobro.pago.CobroPagoScreen
 import edu.ucne.credifast.presentation.cobro.recibo.ReciboScreen
+import edu.ucne.credifast.presentation.historial.HistorialScreen
 import edu.ucne.credifast.presentation.main.MainScreen
+import edu.ucne.credifast.presentation.mora.MoraScreen
 import edu.ucne.credifast.presentation.prestamo.detail.PrestamoDetailScreen
 import edu.ucne.credifast.presentation.prestamo.edit.PrestamoEditScreen
 
@@ -42,8 +47,13 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
                     onOtorgarPrestamo = { backStack.add(Screen.PrestamoEdit) },
                     onPrestamoClick = { id -> backStack.add(Screen.PrestamoDetail(id)) },
                     onCobrarCuota = { cuotaId -> backStack.add(Screen.CobroPago(cuotaId)) },
-                    onMoraIrACobrar = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) },
-                    onMoraVerDetalle = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) }
+                    onIrAMora = { backStack.add(Screen.Mora) },
+                    onIrAHistorial = { backStack.add(Screen.Historial) },
+                    onIrAListaNegra = { backStack.add(Screen.ListaNegra) },
+                    onCerrarSesion = {
+                        backStack.clear()
+                        backStack.add(Screen.Login)
+                    }
                 )
             }
 
@@ -84,6 +94,27 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
                     pagoId = key.pagoId,
                     onCerrar = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) }
                 )
+            }
+
+            entry<Screen.Mora> {
+                MoraScreen(
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) },
+                    onIrACobrar = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) },
+                    onVerDetalle = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) }
+                )
+            }
+
+            entry<Screen.Historial> {
+                HistorialScreen(
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) },
+                    onPrestamoClick = { prestamoId -> backStack.add(Screen.PrestamoDetail(prestamoId)) }
+                )
+            }
+
+            entry<Screen.ListaNegra> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Módulo de Lista Negra (próximamente)")
+                }
             }
         }
     )
