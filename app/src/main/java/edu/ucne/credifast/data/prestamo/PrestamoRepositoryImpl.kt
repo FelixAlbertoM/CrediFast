@@ -35,6 +35,9 @@ class PrestamoRepositoryImpl @Inject constructor(
     override suspend fun clienteTienePrestamoActivo(clienteId: Int): Boolean =
         prestamoDao.getPrestamoActivoDeCliente(clienteId) != null
 
+    override fun observePrestamosDeCliente(clienteId: Int): Flow<List<Prestamo>> =
+        prestamoDao.observeByCliente(clienteId).map { lista -> lista.map { it.toDomain() } }
+
     override suspend fun otorgarPrestamo(
         clienteId: Int,
         capital: Double,
