@@ -30,6 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.credifast.domain.dashboard.model.RecaudacionDia
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,23 +62,41 @@ fun DashboardScreen(
                     .padding(top = 12.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        "PENDIENTE EN LA CALLE",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                    )
-                    Text(
-                        "RD$${"%,.0f".format(data.pendienteEnCalle)}",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        "${data.prestamosActivos} préstamos activos",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
-                    )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Box {
+                        Text(
+                            "RD$",
+                            style = MaterialTheme.typography.displayLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White.copy(alpha = 0.08f),
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 8.dp)
+                        )
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            Text(
+                                "PENDIENTE EN LA CALLE",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                            )
+                            Text(
+                                "RD$${"%,.0f".format(data.pendienteEnCalle)}",
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Text(
+                                "${data.prestamosActivos} préstamos activos · corte de hoy",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -159,6 +181,12 @@ private fun GraficoBarras(dias: List<RecaudacionDia>, modifier: Modifier = Modif
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
+                Text(
+                    formatoMonto(dia.monto),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.size(4.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxHeight(fraccion)
@@ -180,4 +208,9 @@ private fun GraficoBarras(dias: List<RecaudacionDia>, modifier: Modifier = Modif
             }
         }
     }
+}
+private fun formatoMonto(monto: Double): String = when {
+    monto <= 0 -> "0"
+    monto >= 1000 -> "${"%.1f".format(monto / 1000)}k"
+    else -> "%.0f".format(monto)
 }
