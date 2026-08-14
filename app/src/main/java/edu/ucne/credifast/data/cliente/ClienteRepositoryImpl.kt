@@ -53,4 +53,6 @@ class ClienteRepositoryImpl @Inject constructor(
         val encontrado = clienteDao.getByTelefono(telefono) ?: return false
         return encontrado.clienteId != excluirId
     }
+    override fun observeListaNegra(): Flow<List<Cliente>> =
+        clienteDao.observeListaNegra().map { lista -> lista.map { it.toDomain() } }
 }
