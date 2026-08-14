@@ -34,11 +34,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.credifast.domain.mora.model.ClienteEnMora
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoraScreen(
     modifier: Modifier = Modifier,
+    onBack: () -> Unit,
     onIrACobrar: (Int) -> Unit,
     onVerDetalle: (Int) -> Unit,
     viewModel: MoraViewModel = hiltViewModel()
@@ -48,7 +50,19 @@ fun MoraScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Mora") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("Mora") },
+                navigationIcon = {
+                    androidx.compose.material3.IconButton(onClick = onBack) {
+                        androidx.compose.material3.Icon(
+                            androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                }
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
