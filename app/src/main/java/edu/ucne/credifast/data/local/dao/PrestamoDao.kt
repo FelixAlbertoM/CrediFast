@@ -27,4 +27,7 @@ interface PrestamoDao {
 
     @Query("SELECT * FROM prestamos WHERE clienteId = :clienteId AND estado = 'ACTIVO' LIMIT 1")
     suspend fun getPrestamoActivoDeCliente(clienteId: Int): PrestamoEntity?
+
+    @Query("SELECT * FROM prestamos WHERE clienteId = :clienteId")
+    fun observeByCliente(clienteId: Int): Flow<List<PrestamoEntity>>
 }
