@@ -8,4 +8,5 @@ interface AuthRepository {
     fun signOut()
     fun getCurrentUser(): UsuarioAuth?
     fun isLoggedIn(): Boolean
+    fun observeAuthState(): kotlinx.coroutines.flow.Flow<Boolean>
 }

@@ -17,6 +17,7 @@ import edu.ucne.credifast.domain.auth.model.UsuarioAuth
 import edu.ucne.credifast.domain.auth.repository.AuthRepository
 import edu.ucne.credifast.domain.common.Resource
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.channels.awaitClose
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -90,4 +91,15 @@ class GoogleAuthRepositoryImpl @Inject constructor(
     }
 
     override fun isLoggedIn(): Boolean = auth.currentUser != null
+
+    override fun observeAuthState(): kotlinx.coroutines.flow.Flow<Boolean> =
+        kotlinx.coroutines.flow.callbackFlow {
+            val listener = com.google.firebase.auth.FirebaseAuth.AuthStateListener { firebaseAuth ->
+                val logueado = firebaseAuth.currentUser != null
+                android.util.Log.d("CERRAR_SESION", "3 - AuthState cambió: logueado=$logueado")
+                trySend(logueado)
+            }
+            auth.addAuthStateListener(listener)
+            awaitClose { auth.removeAuthStateListener(listener) }
+        }
 }
