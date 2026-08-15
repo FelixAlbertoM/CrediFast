@@ -211,6 +211,13 @@ private fun TotalCard(
 @Composable
 private fun CobroItemCard(item: CobroItem, onClick: () -> Unit) {
     val pagada = item.cuota.estaPagada
+    val vencida = !pagada && item.cuota.diasAtraso() > 0
+
+    val (estadoTexto, estadoColor, estadoFondo) = when {
+        pagada -> Triple("Cobrada", MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primaryContainer)
+        vencida -> Triple("Vencida", MaterialTheme.colorScheme.error, MaterialTheme.colorScheme.errorContainer)
+        else -> Triple("Pendiente", MaterialTheme.colorScheme.onSurfaceVariant, MaterialTheme.colorScheme.surfaceVariant)
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick
@@ -225,21 +232,20 @@ private fun CobroItemCard(item: CobroItem, onClick: () -> Unit) {
             Surface(
                 modifier = Modifier.size(42.dp),
                 shape = CircleShape,
-                color = if (pagada) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.surfaceVariant
+                color = estadoFondo
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     if (pagada) {
                         Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = estadoColor
                         )
                     } else {
                         Text(
                             item.nombreCliente.take(2).uppercase(),
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = estadoColor
                         )
                     }
                 }
@@ -252,14 +258,17 @@ private fun CobroItemCard(item: CobroItem, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Column(horizontalAlignment = Alignment.End) {
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("RD$${"%,d".format(item.totalCuota)}", fontWeight = FontWeight.Bold)
-                Text(
-                    if (pagada) "Cobrada" else "Pendiente",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (pagada) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Surface(shape = MaterialTheme.shapes.small, color = estadoFondo) {
+                    Text(
+                        estadoTexto,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = estadoColor
+                    )
+                }
             }
         }
     }
