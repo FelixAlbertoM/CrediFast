@@ -31,6 +31,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +69,63 @@ fun ClienteEditScreen(
                     }
                 }
             )
+            if (state.mostrarDialogoEliminar) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.onEvent(ClienteEditUiEvent.CancelarEliminar) },
+                    title = { Text("Eliminar cliente") },
+                    text = { Text("¿Seguro que deseas eliminar a ${state.nombre}? Esta acción no se puede deshacer.") },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.onEvent(ClienteEditUiEvent.ConfirmarEliminar) }) {
+                            Text("Eliminar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.onEvent(ClienteEditUiEvent.CancelarEliminar) }) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
+            }
+
+            if (state.mostrarDialogoListaNegra) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.onEvent(ClienteEditUiEvent.CancelarToggleListaNegra) },
+                    title = {
+                        Text(if (state.enListaNegra) "Quitar de lista negra" else "Agregar a lista negra")
+                    },
+                    text = {
+                        Text(
+                            if (state.enListaNegra)
+                                "¿Deseas quitar a ${state.nombre} de la lista negra? Podrá recibir préstamos de nuevo."
+                            else
+                                "¿Deseas agregar a ${state.nombre} a la lista negra? No podrá recibir préstamos."
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.onEvent(ClienteEditUiEvent.ConfirmarToggleListaNegra) }) {
+                            Text(if (state.enListaNegra) "Quitar" else "Agregar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.onEvent(ClienteEditUiEvent.CancelarToggleListaNegra) }) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
+            }
+
+            if (state.noSePuedeEliminar) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.onEvent(ClienteEditUiEvent.MensajeNoEliminableMostrado) },
+                    title = { Text("No se puede eliminar") },
+                    text = { Text("Este cliente tiene préstamos registrados. Para eliminarlo, primero debe saldar y no tener historial de préstamos.") },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.onEvent(ClienteEditUiEvent.MensajeNoEliminableMostrado) }) {
+                            Text("Entendido")
+                        }
+                    }
+                )
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
@@ -128,8 +187,27 @@ fun ClienteEditScreen(
             }
 
             if (state.esEdicion) {
+                if (!state.enListaNegra) {
+                    OutlinedTextField(
+                        value = state.razonListaNegra ?: "",
+                        onValueChange = { viewModel.onEvent(ClienteEditUiEvent.RazonListaNegraChanged(it)) },
+                        label = { Text("Razón de lista negra (opcional)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 OutlinedButton(
-                    onClick = { viewModel.onEvent(ClienteEditUiEvent.Eliminar) },
+                    onClick = { viewModel.onEvent(ClienteEditUiEvent.SolicitarToggleListaNegra) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (state.enListaNegra) "Quitar de lista negra"
+                        else "Agregar a lista negra"
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = { viewModel.onEvent(ClienteEditUiEvent.SolicitarEliminar) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = null)

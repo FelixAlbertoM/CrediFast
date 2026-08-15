@@ -18,6 +18,7 @@ import edu.ucne.credifast.presentation.main.MainScreen
 import edu.ucne.credifast.presentation.mora.MoraScreen
 import edu.ucne.credifast.presentation.prestamo.detail.PrestamoDetailScreen
 import edu.ucne.credifast.presentation.prestamo.edit.PrestamoEditScreen
+import edu.ucne.credifast.presentation.listanegra.ListaNegraScreen
 
 @Composable
 fun CrediFastNavHost(isLoggedIn: Boolean) {
@@ -112,9 +113,9 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
             }
 
             entry<Screen.ListaNegra> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Módulo de Lista Negra (próximamente)")
-                }
+                ListaNegraScreen(
+                    onBack = { if (backStack.isNotEmpty()) backStack.removeAt(backStack.lastIndex) }
+                )
             }
         }
     )

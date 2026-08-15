@@ -20,7 +20,9 @@ import javax.inject.Inject
 class ClienteEditViewModel @Inject constructor(
     private val getClienteUseCase: GetClienteUseCase,
     private val guardarClienteUseCase: GuardarClienteUseCase,
-    private val eliminarClienteUseCase: EliminarClienteUseCase
+    private val eliminarClienteUseCase: EliminarClienteUseCase,
+    private val toggleListaNegraUseCase: edu.ucne.credifast.domain.cliente.usecase.ToggleListaNegraUseCase,
+    private val clienteTienePrestamosUseCase: edu.ucne.credifast.domain.cliente.usecase.ClienteTienePrestamosUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ClienteEditUiState())
@@ -61,6 +63,8 @@ class ClienteEditViewModel @Inject constructor(
                     it.copy(cedula = limpio, errorCedula = ClienteValidator.validarCedula(limpio))
                 }
             }
+            is ClienteEditUiEvent.RazonListaNegraChanged ->
+                _state.update { it.copy(razonListaNegra = event.v) }
 
             ClienteEditUiEvent.NavegacionRealizada ->
                 _state.update { it.copy(guardadoExitoso = false) }
@@ -75,8 +79,23 @@ class ClienteEditViewModel @Inject constructor(
                 it.copy(direccion = event.v, errorDireccion = ClienteValidator.validarDireccion(event.v))
             }
             ClienteEditUiEvent.Guardar -> guardar()
-            ClienteEditUiEvent.Eliminar -> eliminar()
+            ClienteEditUiEvent.SolicitarEliminar -> solicitarEliminar()
+            ClienteEditUiEvent.ConfirmarEliminar -> eliminar()
+            ClienteEditUiEvent.CancelarEliminar ->
+                _state.update { it.copy(mostrarDialogoEliminar = false) }
+            ClienteEditUiEvent.SolicitarToggleListaNegra ->
+                _state.update { it.copy(mostrarDialogoListaNegra = true) }
+            ClienteEditUiEvent.ConfirmarToggleListaNegra -> {
+                _state.update { it.copy(mostrarDialogoListaNegra = false) }
+                toggleListaNegra()
+            }
+            ClienteEditUiEvent.CancelarToggleListaNegra ->
+                _state.update { it.copy(mostrarDialogoListaNegra = false) }
+            ClienteEditUiEvent.MensajeNoEliminableMostrado ->
+                _state.update { it.copy(noSePuedeEliminar = false) }
             ClienteEditUiEvent.MensajeErrorMostrado -> _state.update { it.copy(mensajeError = null) }
+            ClienteEditUiEvent.Eliminar -> solicitarEliminar()
+            ClienteEditUiEvent.ToggleListaNegra -> toggleListaNegra()
         }
     }
 
@@ -120,7 +139,39 @@ class ClienteEditViewModel @Inject constructor(
         }
     }
 
+
+    private fun solicitarEliminar() {
+        val id = _state.value.clienteId
+        if (id == 0) return
+        viewModelScope.launch {
+            if (clienteTienePrestamosUseCase(id)) {
+                _state.update { it.copy(noSePuedeEliminar = true) }
+            } else {
+                _state.update { it.copy(mostrarDialogoEliminar = true) }
+            }
+        }
+    }
+
     private fun eliminar() {
+        val s = _state.value
+        viewModelScope.launch {
+            val cliente = Cliente(
+                clienteId = s.clienteId,
+                nombre = s.nombre,
+                cedula = s.cedula,
+                telefono = s.telefono,
+                direccion = s.direccion,
+                enListaNegra = s.enListaNegra,
+                razonListaNegra = s.razonListaNegra,
+                fechaListaNegra = s.fechaListaNegra,
+                fechaRegistro = s.fechaRegistro
+            )
+            eliminarClienteUseCase(cliente)
+            _state.update { it.copy(mostrarDialogoEliminar = false, guardadoExitoso = true) }
+        }
+    }
+    
+    private fun toggleListaNegra() {
         val s = _state.value
         if (s.clienteId == 0) return
         viewModelScope.launch {
@@ -129,12 +180,23 @@ class ClienteEditViewModel @Inject constructor(
                 nombre = s.nombre,
                 cedula = s.cedula,
                 telefono = s.telefono,
-                direccion = s.direccion
+                direccion = s.direccion,
+                enListaNegra = s.enListaNegra,
+                razonListaNegra = s.razonListaNegra,
+                fechaListaNegra = s.fechaListaNegra,
+                fechaRegistro = s.fechaRegistro
             )
-            when (val r = eliminarClienteUseCase(cliente)) {
-                is Resource.Success -> _state.update { it.copy(guardadoExitoso = true) }
-                is Resource.Error -> _state.update { it.copy(mensajeError = r.message) }
-                Resource.Loading -> {}
+            val nuevoEstado = !s.enListaNegra
+            toggleListaNegraUseCase(
+                cliente = cliente,
+                enListaNegra = nuevoEstado,
+                razon = if (nuevoEstado) s.razonListaNegra else null
+            )
+            _state.update {
+                it.copy(
+                    enListaNegra = nuevoEstado,
+                    razonListaNegra = if (nuevoEstado) it.razonListaNegra else null
+                )
             }
         }
     }

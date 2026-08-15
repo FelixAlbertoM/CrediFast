@@ -10,6 +10,7 @@ interface PrestamoRepository {
     fun observePrestamosPorEstado(estado: String): Flow<List<Prestamo>>
     suspend fun getPrestamo(id: Int): Prestamo?
     fun observeCuotas(prestamoId: Int): Flow<List<Cuota>>
+    fun observePrestamosDeCliente(clienteId: Int): Flow<List<Prestamo>>
 
     suspend fun otorgarPrestamo(
         clienteId: Int,

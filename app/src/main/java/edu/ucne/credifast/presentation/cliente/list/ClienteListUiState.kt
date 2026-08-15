@@ -1,17 +1,26 @@
 package edu.ucne.credifast.presentation.cliente.list
-
-import edu.ucne.credifast.domain.cliente.model.Cliente
+enum class FiltroCliente { TODOS, CON_PRESTAMO, LISTA_NEGRA }
 
 data class ClienteListUiState(
-    val clientes: List<Cliente> = emptyList(),
+    val clientes: List<ClienteListItem> = emptyList(),
     val filtro: String = "",
+    val chipSeleccionado: FiltroCliente = FiltroCliente.TODOS,
     val isLoading: Boolean = false
 ) {
-    val clientesFiltrados: List<Cliente>
-        get() = if (filtro.isBlank()) clientes
-        else clientes.filter {
-            it.nombre.contains(filtro, ignoreCase = true) ||
-                    it.cedula.contains(filtro) ||
-                    it.telefono.contains(filtro)
+    val clientesFiltrados: List<ClienteListItem>
+        get() {
+            val porChip = when (chipSeleccionado) {
+                FiltroCliente.TODOS -> clientes
+                FiltroCliente.CON_PRESTAMO -> clientes.filter { it.tienePrestamoActivo }
+                FiltroCliente.LISTA_NEGRA -> clientes.filter { it.estado == EstadoCliente.LISTA_NEGRA }
+            }
+            return if (filtro.isBlank()) porChip
+            else porChip.filter {
+                it.cliente.nombre.contains(filtro, ignoreCase = true) ||
+                        it.cliente.cedula.contains(filtro) ||
+                        it.cliente.telefono.contains(filtro)
+            }
         }
+
+    val totalClientes: Int get() = clientes.size
 }

@@ -17,7 +17,10 @@ data class ClienteEditUiState(
     val errorDireccion: String? = null,
     val isLoading: Boolean = false,
     val guardadoExitoso: Boolean = false,
-    val mensajeError: String? = null
+    val mensajeError: String? = null,
+    val mostrarDialogoEliminar: Boolean = false,
+    val mostrarDialogoListaNegra: Boolean = false,
+    val noSePuedeEliminar: Boolean = false,
 ) {
     val esEdicion: Boolean get() = clienteId != 0
 }

@@ -36,7 +36,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CobroPagoScreen(
@@ -46,12 +53,16 @@ fun CobroPagoScreen(
     viewModel: CobroPagoViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var accionAConfirmar by remember { mutableStateOf<CobroPagoUiEvent?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(cuotaId) { viewModel.cargar(cuotaId) }
 
     LaunchedEffect(state.pagoRealizadoId) {
-        state.pagoRealizadoId?.let { onPagoRealizado(it) }
+        state.pagoRealizadoId?.let {
+            onPagoRealizado(it)
+            viewModel.limpiarNavegacion()
+        }
     }
     LaunchedEffect(state.errorMensaje) {
         state.errorMensaje?.let {
@@ -84,23 +95,48 @@ fun CobroPagoScreen(
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.size(46.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                state.nombreCliente.take(2).uppercase(),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            state.nombreCliente,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Cuota ${state.numeroCuota} de ${state.totalCuotas}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     Text(
-                        state.nombreCliente,
+                        "RD$${"%,.0f".format(state.montoCuota)}",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        "Cuota ${state.numeroCuota} de ${state.totalCuotas}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
-                    onClick = { viewModel.onEvent(CobroPagoUiEvent.PagarCuotaCompleta) },
+                    onClick = { accionAConfirmar = CobroPagoUiEvent.PagarCuotaCompleta },
                     modifier = Modifier.weight(1f),
                     enabled = !state.isLoading
                 ) {
@@ -110,7 +146,7 @@ fun CobroPagoScreen(
                     }
                 }
                 OutlinedButton(
-                    onClick = { viewModel.onEvent(CobroPagoUiEvent.SaldarPrestamo) },
+                    onClick = { accionAConfirmar = CobroPagoUiEvent.SaldarPrestamo },
                     modifier = Modifier.weight(1f),
                     enabled = !state.isLoading
                 ) {
@@ -134,16 +170,45 @@ fun CobroPagoScreen(
                 value = state.nota,
                 onValueChange = { viewModel.onEvent(CobroPagoUiEvent.NotaChanged(it)) },
                 label = { Text("Nota (opcional)") },
+                placeholder = { Text("Ej.: abonó de más, pagó su esposa…") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Button(
-                onClick = { viewModel.onEvent(CobroPagoUiEvent.PagarMontoLibre) },
+                onClick = { accionAConfirmar = CobroPagoUiEvent.PagarMontoLibre },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !state.isLoading && state.montoIngresado.isNotBlank()
             ) {
                 Text("Realizar pago y generar recibo")
             }
         }
+    }
+    accionAConfirmar?.let { accion ->
+        val (titulo, mensaje) = when (accion) {
+            CobroPagoUiEvent.PagarCuotaCompleta ->
+                "Cobrar cuota completa" to "¿Confirmas el cobro de la cuota completa por RD$${"%,.0f".format(state.montoCuota)} a ${state.nombreCliente}?"
+            CobroPagoUiEvent.SaldarPrestamo ->
+                "Saldar préstamo" to "¿Confirmas saldar el préstamo completo por RD$${"%,.0f".format(state.balancePendiente)} de ${state.nombreCliente}?"
+            else ->
+                "Realizar pago" to "¿Confirmas el pago de RD$${state.montoIngresado} de ${state.nombreCliente}?"
+        }
+        AlertDialog(
+            onDismissRequest = { accionAConfirmar = null },
+            title = { Text(titulo) },
+            text = { Text(mensaje) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.onEvent(accion)
+                    accionAConfirmar = null
+                }) {
+                    Text("Confirmar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { accionAConfirmar = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

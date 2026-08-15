@@ -27,4 +27,7 @@ interface ClienteDao {
 
     @Query("SELECT * FROM clientes WHERE telefono = :telefono LIMIT 1")
     suspend fun getByTelefono(telefono: String): ClienteEntity?
+
+    @Query("SELECT * FROM clientes WHERE enListaNegra = 1 ORDER BY fechaListaNegra DESC")
+    fun observeListaNegra(): Flow<List<ClienteEntity>>
 }

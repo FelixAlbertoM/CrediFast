@@ -11,4 +11,5 @@ interface ClienteRepository {
     suspend fun eliminarCliente(cliente: Cliente): Resource<Unit>
     suspend fun existeCedula(cedula: String, excluirId: Int): Boolean
     suspend fun existeTelefono(telefono: String, excluirId: Int): Boolean
+    fun observeListaNegra(): Flow<List<Cliente>>
 }

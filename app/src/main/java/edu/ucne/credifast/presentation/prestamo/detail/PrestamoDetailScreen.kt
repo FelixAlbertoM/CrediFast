@@ -82,23 +82,25 @@ fun PrestamoDetailScreen(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        state.cliente?.nombre ?: "Cliente",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+                Box {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            state.cliente?.nombre ?: "Cliente",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     Text(
                         "RD$${"%,.0f".format(prestamo.balancePendiente)}",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
-                    Text(
-                        "restante de RD$${"%,.0f".format(prestamo.montoTotal)} · interés ${prestamo.interesPorcentaje.toInt()}% · ${prestamo.cantidadCuotas} semanas",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
-                    )
+                        Text(
+                            "restante de RD$${"%,.0f".format(prestamo.montoTotal)} · interés ${prestamo.interesPorcentaje.toInt()}% · ${prestamo.cantidadCuotas} semanas",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+                        )
+                    }
                 }
             }
 

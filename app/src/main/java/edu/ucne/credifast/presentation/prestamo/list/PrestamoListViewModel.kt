@@ -6,17 +6,23 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.credifast.domain.cliente.usecase.ObserveClientesUseCase
 import edu.ucne.credifast.domain.prestamo.usecase.ObservePrestamosUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import edu.ucne.credifast.domain.prestamo.repository.PrestamoRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PrestamoListViewModel @Inject constructor(
     private val observePrestamosUseCase: ObservePrestamosUseCase,
-    private val observeClientesUseCase: ObserveClientesUseCase
+    private val observeClientesUseCase: ObserveClientesUseCase,
+    private val prestamoRepository: PrestamoRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PrestamoListUiState())
@@ -30,29 +36,53 @@ class PrestamoListViewModel @Inject constructor(
         when (event) {
             is PrestamoListUiEvent.FiltroChanged ->
                 _state.update { it.copy(filtro = event.texto) }
+            is PrestamoListUiEvent.ChipChanged ->
+                _state.update { it.copy(chipSeleccionado = event.chip) }
         }
     }
 
     private fun observar() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            combine(
-                observePrestamosUseCase(),
-                observeClientesUseCase()
-            ) { prestamos, clientes ->
-                val porId = clientes.associateBy { it.clienteId }
-                prestamos.filter { it.estado == "ACTIVO" }.map { p ->
-                    val c = porId[p.clienteId]
-                    PrestamoUi(
-                        prestamo = p,
-                        nombreCliente = c?.nombre ?: "Cliente #${p.clienteId}",
-                        cedulaCliente = c?.cedula ?: "",
-                        telefonoCliente = c?.telefono ?: ""
-                    )
+            observePrestamosUseCase()
+                .flatMapLatest { prestamos ->
+                    if (prestamos.isEmpty()) {
+                        flow { emit(emptyList<PrestamoListItem>()) }
+                    } else {
+                        val flujosCuotas = prestamos.map { p ->
+                            prestamoRepository.observeCuotas(p.prestamoId)
+                        }
+                        combine(
+                            combine(flujosCuotas) { it.toList() },
+                            observeClientesUseCase()
+                        ) { listasCuotas, clientes ->
+                            val clientesPorId = clientes.associateBy { it.clienteId }
+                            prestamos.mapIndexed { index, prestamo ->
+                                val cuotas = listasCuotas[index]
+                                val vencidas = cuotas.filter { it.diasAtraso() > 0 }
+                                val proxima = cuotas
+                                    .filter { !it.estaPagada }
+                                    .minByOrNull { it.fechaVencimiento }
+                                val pagadas = cuotas.count { it.estaPagada }
+                                val cliente = clientesPorId[prestamo.clienteId]
+                                PrestamoListItem(
+                                    prestamoId = prestamo.prestamoId,
+                                    nombreCliente = cliente?.nombre ?: "Cliente #${prestamo.clienteId}",
+                                    estado = prestamo.estado,
+                                    balancePendiente = prestamo.balancePendiente,
+                                    numeroCuotaActual = (pagadas + 1).coerceAtMost(prestamo.cantidadCuotas),
+                                    totalCuotas = prestamo.cantidadCuotas,
+                                    fechaProximoVencimiento = proxima?.fechaVencimiento,
+                                    cuotasVencidas = vencidas.size,
+                                    moraAcumulada = vencidas.sumOf { it.mora() }
+                                )
+                            }
+                        }
+                    }
                 }
-            }.collect { lista ->
-                _state.update { it.copy(prestamos = lista, isLoading = false) }
-            }
+                .collect { items ->
+                    _state.update { it.copy(prestamos = items, isLoading = false) }
+                }
         }
     }
 }

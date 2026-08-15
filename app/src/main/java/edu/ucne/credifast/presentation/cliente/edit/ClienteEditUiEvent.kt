@@ -9,4 +9,13 @@ sealed interface ClienteEditUiEvent {
     data object Eliminar : ClienteEditUiEvent
     data object MensajeErrorMostrado : ClienteEditUiEvent
     data object NavegacionRealizada : ClienteEditUiEvent
+    data class RazonListaNegraChanged(val v: String) : ClienteEditUiEvent
+    data object ToggleListaNegra : ClienteEditUiEvent
+    data object SolicitarEliminar : ClienteEditUiEvent
+    data object ConfirmarEliminar : ClienteEditUiEvent
+    data object CancelarEliminar : ClienteEditUiEvent
+    data object SolicitarToggleListaNegra : ClienteEditUiEvent
+    data object ConfirmarToggleListaNegra : ClienteEditUiEvent
+    data object CancelarToggleListaNegra : ClienteEditUiEvent
+    data object MensajeNoEliminableMostrado : ClienteEditUiEvent
 }
