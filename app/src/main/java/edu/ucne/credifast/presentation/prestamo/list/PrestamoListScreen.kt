@@ -91,30 +91,28 @@ fun PrestamoListScreen(
                     )
                 }
             } else {
-
                 LazyColumn(
-                    modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(state.prestamosFiltrados, key = { it.prestamoId }) { item ->
                         PrestamoItem(item = item, onClick = { onPrestamoClick(item.prestamoId) })
                     }
-                }
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text(
-                        "Total en la calle: RD$${"%,.0f".format(state.totalEnLaCalle)}",
-                        modifier = Modifier.padding(14.dp),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+
+                    if (state.totalEnLaCalle > 0) {
+                        item {
+                            Text(
+                                "Total en la calle: RD$${"%,.0f".format(state.totalEnLaCalle)}",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }
