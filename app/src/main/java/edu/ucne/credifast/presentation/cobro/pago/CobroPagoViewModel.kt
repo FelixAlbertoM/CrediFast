@@ -41,6 +41,9 @@ class CobroPagoViewModel @Inject constructor(
             }
         }
     }
+    fun limpiarNavegacion() {
+        _state.update { it.copy(pagoRealizadoId = null) }
+    }
 
     fun onEvent(event: CobroPagoUiEvent) {
         when (event) {
