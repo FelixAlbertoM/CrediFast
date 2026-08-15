@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.foundation.layout.Row
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,6 +129,21 @@ fun ReciboScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedButton(
+                    onClick = { },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(" Imprimir")
+                }
+                Button(
+                    onClick = { },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(" Enviar PDF")
                 }
             }
 
