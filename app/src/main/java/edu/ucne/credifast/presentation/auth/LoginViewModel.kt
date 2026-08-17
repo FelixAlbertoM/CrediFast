@@ -21,12 +21,7 @@ class LoginViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(
-        LoginUiState(
-            isLoggedIn = getCurrentUserUseCase.isLoggedIn(),
-            usuario = getCurrentUserUseCase()
-        )
-    )
+    private val _state = MutableStateFlow(LoginUiState())
     val state: StateFlow<LoginUiState> = _state.asStateFlow()
 
     fun onEvent(event: LoginUiEvent) {
@@ -34,6 +29,7 @@ class LoginViewModel @Inject constructor(
             LoginUiEvent.SignInWithGoogle -> signIn()
             LoginUiEvent.SignOut -> signOut()
             LoginUiEvent.ClearError -> _state.update { it.copy(errorMessage = null) }
+            LoginUiEvent.ResetLogin -> _state.update { it.copy(isLoggedIn = false) }
         }
     }
 

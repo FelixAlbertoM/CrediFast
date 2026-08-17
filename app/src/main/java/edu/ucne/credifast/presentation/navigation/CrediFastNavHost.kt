@@ -1,10 +1,8 @@
 package edu.ucne.credifast.presentation.navigation
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -25,6 +23,14 @@ fun CrediFastNavHost(isLoggedIn: Boolean) {
     val backStack = rememberNavBackStack(
         if (isLoggedIn) Screen.Main else Screen.Login
     )
+
+    LaunchedEffect(isLoggedIn) {
+        val root = if (isLoggedIn) Screen.Main else Screen.Login
+        if (backStack.isEmpty() || backStack[0] != root) {
+            backStack.clear()
+            backStack.add(root)
+        }
+    }
 
     NavDisplay(
         backStack = backStack,

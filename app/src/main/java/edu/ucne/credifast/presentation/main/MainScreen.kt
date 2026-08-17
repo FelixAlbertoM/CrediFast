@@ -30,7 +30,8 @@ fun MainScreen(
     onIrAMora: () -> Unit,
     onIrAHistorial: () -> Unit,
     onIrAListaNegra: () -> Unit,
-    onCerrarSesion: () -> Unit
+    onCerrarSesion: () -> Unit,
+    viewModel: MainViewModel = androidx.hilt.navigation.compose.hiltViewModel()
 ) {
     var tabActual by remember { mutableStateOf(MainTab.INICIO) }
 
@@ -80,7 +81,10 @@ fun MainScreen(
                 onMora = onIrAMora,
                 onHistorial = onIrAHistorial,
                 onListaNegra = onIrAListaNegra,
-                onCerrarSesion = onCerrarSesion
+                onCerrarSesion = {
+                    viewModel.cerrarSesion()
+                    onCerrarSesion()
+                }
             )
         }
     }

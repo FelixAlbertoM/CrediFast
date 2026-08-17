@@ -43,7 +43,10 @@ fun LoginScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.isLoggedIn) {
-        if (state.isLoggedIn) onLoginSuccess()
+        if (state.isLoggedIn) {
+            onLoginSuccess()
+            viewModel.onEvent(LoginUiEvent.ResetLogin)
+        }
     }
 
     LaunchedEffect(state.errorMessage) {
