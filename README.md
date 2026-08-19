@@ -80,4 +80,4 @@ Pasos:
 
 🚀 Instalación mediante Apk: https://github.com/FelixAlbertoM/CrediFast/releases/tag/v1.0
 
-Link del video de la aplicación: https://drive.google.com/file/d/1kZO9juv-IIDkCZiN-L6c9W2EhpExgyKI/view?usp=sharing
+Link del video de la aplicación: https://youtu.be/wyk-XflDU_0
