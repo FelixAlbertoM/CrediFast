@@ -4,9 +4,11 @@ Nuestro proyecto es una plataforma integral de gestión para negocios de présta
 Los usuarios pueden gestionar clientes, otorgar préstamos con interés simple, cobrar por calendario día a día, 
 controlar la mora automáticamente y generar recibos, llevando un seguimiento completo desde que se otorga el préstamo hasta que queda saldado. 💰
 
-👨‍💻 Desarrolladores:
-Romel M. Ortega 
-Félix Alberto Muñoz
+👨‍💻 **Desarrolladores:**
+
+1-Romel M. Ortega
+
+2-Félix Alberto Muñoz
 
 🔐 Usuario de Prueba:
 Acceso con Google 🔑 Correo demo: demo@credifast.com
