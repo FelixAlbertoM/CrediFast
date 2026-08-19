@@ -76,4 +76,6 @@ Pasos:
 5.	Agregar la huella SHA-1 de la máquina en Firebase para habilitar el login con Google. 🔏
 6.	Sincronizar Gradle y ejecutar. ▶️
 
-🚀 Instalacion mediante Apk: https://github.com/FelixAlbertoM/CrediFast/releases/tag/v1.0
+🚀 Instalación mediante Apk: https://github.com/FelixAlbertoM/CrediFast/releases/tag/v1.0
+
+Link del video de la aplicación: https://drive.google.com/file/d/1kZO9juv-IIDkCZiN-L6c9W2EhpExgyKI/view?usp=sharing
